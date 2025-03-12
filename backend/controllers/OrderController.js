@@ -68,7 +68,7 @@ exports.deleteOrder = async (req, res) => {
       return res.status(404).json({ msg: "Order not found" });
     }
 
-    await order.deleteOne(); // ✅ Correct method
+    await order.deleteOne(); 
     res.json({ msg: "Order removed successfully" });
   } catch (err) {
     console.error(err.message);
