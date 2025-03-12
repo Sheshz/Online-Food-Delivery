@@ -1,5 +1,6 @@
 // controller to handle the business logic for order-related operations.
 const Order = require('../models/Order');
+const mongoose = require("mongoose");
 
 // Create a new order
 exports.createOrder = async (req, res) => {
@@ -55,12 +56,22 @@ exports.updateOrderStatus = async (req, res) => {
 // Delete an order
 exports.deleteOrder = async (req, res) => {
   try {
-    const order = await Order.findById(req.params.id);
-    if (!order) return res.status(404).json({ msg: 'Order not found' });
+    console.log("Deleting Order with ID:", req.params.id);
 
-    await order.remove();
-    res.json({ msg: 'Order removed' });
+    // Check if ID is valid
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ msg: "Invalid Order ID format" });
+    }
+
+    const order = await Order.findById(req.params.id);
+    if (!order) {
+      return res.status(404).json({ msg: "Order not found" });
+    }
+
+    await order.deleteOne(); // ✅ Correct method
+    res.json({ msg: "Order removed successfully" });
   } catch (err) {
-    res.status(500).send('Server error');
+    console.error(err.message);
+    res.status(500).send("Server error");
   }
 };
