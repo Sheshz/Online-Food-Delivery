@@ -75,3 +75,22 @@ exports.deleteOrder = async (req, res) => {
     res.status(500).send("Server error");
   }
 };
+
+// In your order controller
+exports.saveOrder = async (req, res) => {
+  const { user, items, totalPrice, paymentStatus, paymentId } = req.body;
+  try {
+    const newOrder = new Order({
+      user: user,
+      items: items,
+      totalPrice: totalPrice,
+      status: paymentStatus === 'succeeded' ? 'Paid' : 'Pending',
+      paymentId: paymentId, // Store the payment ID
+    });
+
+    const savedOrder = await newOrder.save();
+    res.json(savedOrder);
+  } catch (err) {
+    res.status(500).send('Server error');
+  }
+};
