@@ -1,5 +1,3 @@
-// This schema will represent the structure of orders in your MongoDB database.
-
 const mongoose = require('mongoose');
 
 const OrderSchema = new mongoose.Schema({

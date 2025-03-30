@@ -1,42 +1,40 @@
-// backend/middleware/authMiddleware.js
-//Create middleware to verify JWTs, protecting routes that require authentication.
-//const jwt = require("jsonwebtoken");
-
 const jwt = require('jsonwebtoken');
 
 module.exports = (req, res, next) => {
-  // Extract token from the Authorization header
-  const token = req.header('Authorization')?.replace('Bearer ', ''); // remove "Bearer " part
+  // Access the 'Authorization' header directly from req.headers
+  const token = req.headers['authorization']?.replace('Bearer ', '');  // Use req.headers['authorization']
 
   if (!token) {
     return res.status(401).json({ msg: 'No token, authorization denied' });
   }
 
   try {
-    // Verify the token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET); // Use the correct secret from environment variable
-    req.user = decoded.userId;  // Attach user info to request object
-    next(); // Continue to next middleware or route
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);  // Verify token using JWT_SECRET
+    req.user = decoded.userId;  // Attach user info to the request object
+    next();  // Proceed to the next middleware or route
   } catch (err) {
     res.status(401).json({ msg: 'Token is not valid' });
   }
 };
 
+module.exports = (role) => {
+  return (req, res, next) => {
+    const token = req.header('Authorization')?.replace('Bearer ', '');
 
-/*
-const AuthMiddleware = (req, res, next) => {
-  const token = req.header("Authorization")?.split(" ")[1]; // Extracts token from Bearer
-  if (!token) return res.status(401).json({ msg: "No token, Authorization denied" });
+    if (!token) {
+      return res.status(401).json({ msg: 'No token, authorization denied' });
+    }
 
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded; // Attach user to the request object
-    next(); // Proceed to the next middleware or route handler
-  } catch (err) {
-    console.error(err);
-    res.status(401).json({ msg: "Token is not valid" });
-  }
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      req.user = decoded.userId; 
+      req.role = decoded.role; // Check the role
+      if (role && req.role !== role) {
+        return res.status(403).json({ msg: 'Forbidden, admin access required' });
+      }
+      next(); 
+    } catch (err) {
+      res.status(401).json({ msg: 'Token is not valid' });
+    }
+  };
 };
-
-module.exports = AuthMiddleware;
-*/
