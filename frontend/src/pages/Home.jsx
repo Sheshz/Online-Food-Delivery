@@ -47,6 +47,13 @@ const Home = () => {
     <div className="home-container">
       {/* Hero Section */}
       <div className="hero-section">
+        <div className="hero-slideshow">
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
         <div className="hero-content">
           <h1>Delicious Food Delivered To Your Door</h1>
           <p>Fresh ingredients, amazing taste, fast delivery!</p>
